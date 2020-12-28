@@ -39,6 +39,7 @@ from sklearn.svm import SVC
 
 def main(
     args_data_dir,
+    args_model,
     args_classifier_filename,
     args_use_split_dataset,
     args_mode="CLASSIFY",
