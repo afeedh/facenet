@@ -25,9 +25,6 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 # input format
 
 
-# python ./TheMajorProject/main/src/faceRec3.py --path ["FileUpload/cls1.jpeg","FileUpload/stud9ci.png"] --slotid <slotid>
-
-
 def find_duplicate(face_list):
     names_with_duplicate = {}
     for key in face_list:
