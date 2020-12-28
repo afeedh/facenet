@@ -7,4 +7,5 @@ matplotlib
 Pillow
 requests
 psutil
+pandas
 imageio
