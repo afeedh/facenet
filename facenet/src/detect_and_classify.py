@@ -78,7 +78,7 @@ def main(classifierpath, slotid, imagepath, pretrained_model):
     IMAGE_PATH = imagepath
     FACENET_MODEL_PATH = pretrained_model
 
-    IMAGE_PATH = IMAGE_PATH[1:-1].split(",")
+    # IMAGE_PATH = IMAGE_PATH[1:-1].split(",")
     # return
 
     # Load The Custom Classifier
@@ -103,7 +103,9 @@ def main(classifierpath, slotid, imagepath, pretrained_model):
             phase_train_placeholder = tf.get_default_graph().get_tensor_by_name("phase_train:0")
             embedding_size = embeddings.get_shape()[1]
 
-            pnet, rnet, onet = align.detect_face.create_mtcnn(sess, "./TheMajorProject/main/src/align")
+            pnet, rnet, onet = align.detect_face.create_mtcnn(
+                sess, os.path.dirname(os.path.realpath(__file__)) + "/align/"
+            )
 
             # people_detected = set()
             person_detected = collections.Counter()
@@ -120,6 +122,7 @@ def main(classifierpath, slotid, imagepath, pretrained_model):
                 bounding_boxes, _ = align.detect_face.detect_face(frame, MINSIZE, pnet, rnet, onet, THRESHOLD, FACTOR)
 
                 faces_found = bounding_boxes.shape[0]
+                print("Faces found :", faces_found)
                 try:
                     if faces_found > 0:
                         det = bounding_boxes[:, 0:4]
@@ -169,7 +172,7 @@ def main(classifierpath, slotid, imagepath, pretrained_model):
                             text_x = bb[i][0]
                             text_y = bb[i][3] + 20
 
-                            if best_class_probabilities > 0.60:
+                            if best_class_probabilities > 0.20:
                                 name = class_names[best_class_indices[0]]
                                 # print(name)
                                 id = uuid.uuid1().int
@@ -211,7 +214,8 @@ def main(classifierpath, slotid, imagepath, pretrained_model):
 
             # cap.release()
             duplicate_keys = find_duplicate(face_list)
-            present_list = ""
+            present_list = []
+            absent_list = []
             # for key in duplicate_keys:
             #     face_list[key] = replace_with_second_best(face_list[key])
             for key in detected_face.keys():
@@ -220,13 +224,13 @@ def main(classifierpath, slotid, imagepath, pretrained_model):
                         "./static/{}--{}-{}.jpg".format(SLOTID, face_list[key]["name"], face_list[key]["prob"]),
                         detected_face[key],
                     )
-                    present_list = present_list + face_list[key]["name"][:9] + ","
+                    present_list.append(face_list[key]["name"].split(" ")[0])
                 else:
                     imageio.imwrite(
                         "./static/{}_{}-{}.jpg".format(SLOTID, unknown_list[key]["name"], unknown_list[key]["prob"]),
                         detected_face[key],
                     )
-            # print(json.dumps(face_list, indent=4))
-            present_list = present_list[:-1]
-            print(present_list, end="")
+                    absent_list.append(face_list[key]["name"].split(" ")[0])
+            print(json.dumps(face_list, indent=4))
+            return {"regno": present_list}
             cv2.destroyAllWindows()
