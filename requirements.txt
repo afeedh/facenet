@@ -1,7 +1,7 @@
-tensorflow
+tensorflow==1.7
 scipy
 scikit-learn
-opencv-python
+opencv-python==3.4.0.14
 h5py
 matplotlib
 Pillow
@@ -9,3 +9,4 @@ requests
 psutil
 pandas
 imageio
+numpy==1.14.3
